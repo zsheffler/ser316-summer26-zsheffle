@@ -22,14 +22,14 @@ Review ALL source files (in main not test) in the project and identify defects u
 
 | Defect ID | File | Line(s) | Category | Description | Severity |
 |-----------|------|---------|----------|-------------|----------|
-| 1 | | | | | |
-| 2 | | | | | |
-| 3 | | | | | |
-| 4 | | | | | |
-| 5 | | | | | |
-| 6 | | | | | |
-| 7 | | | | | |
-| 8 | | | | | |
+| 1 | calculateFine.java | 169     | CG | Use of magic numbers                        | Low      |
+| 2 | calculateFine.java | 231     | CG | Use of magic numbers                        | Low      |
+| 3 | calculateFine.java | 259&264 | CG | Returns -1 with no documention              | Medium   |
+| 4 | Book.java          | 46      | FD | zero copies, yet avaible                    | Critical |
+| 5 | Book.java          | 138     | CG | Magic number                                | Medium   |
+| 6 | Partron.java       | 118     | CS | Should be switch                            | Medium   |
+| 7 | Checkout.java      | 17      | CS | Variable bookList misleading - Map not List | Medium   |
+| 8 | Book.java          | 107     | FD | Magic number 100 should be totalCopies      | High     |
 | 9 | | | | | |
 | 10 | | | | | |
 
