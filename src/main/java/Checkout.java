@@ -15,7 +15,8 @@ public class Checkout {
     private Map<String, Book> bookList; // ISBN -> Book
     private Map<String, Patron> patrons; // PatronID -> Patron
     private List<Transaction> history; //
-
+    private static final int ISBN_10 = 10; // digits (e.g., "0123456789")
+    private static final int ISBN_13 = 13; // digits (e.g., "978-0-123456-78-9")
     /**
      * Inner class to track checkout transactions.
      */
@@ -228,7 +229,7 @@ public class Checkout {
 
         // Check length (must be 10 or 13 digits)
         int length = numbers.length();
-        return length == 10 || length == 13;
+        return length == ISBN_10 || length == ISBN_13;
     }
 
     /**
