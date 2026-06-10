@@ -46,7 +46,11 @@ public class Book {
             this.available = false;
         } else {
             this.availableCopies = totalCopies;
-            this.available = true;
+            if (availableCopies > 0) {
+                this.available = true;
+            } else {
+                this.available = false;
+            }
         }
     }
 
