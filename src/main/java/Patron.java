@@ -216,6 +216,6 @@ public class Patron {
 
     @Override
     public String toString() {
-        return patronId+"-"+name+"("+type+")"+"[Books:"+bookMap.size()+"/"+getMaxCheckoutLimit()+",Fines:$"+ fines +"]";
+        return patronId + "-" + name + "(" + type + ")" + "[Books:" + bookMap.size() + "/" + getMaxCheckoutLimit() + ",Fines:$" + fines +"]";
     }
 }
