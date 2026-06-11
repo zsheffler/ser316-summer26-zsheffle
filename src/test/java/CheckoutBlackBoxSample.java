@@ -1,5 +1,6 @@
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
@@ -1159,5 +1160,77 @@ public class CheckoutBlackBoxSample {
                         "Patron should NOT have 5th book in list for " + checkoutClass.getSimpleName());
         }
                 
+        @ParameterizedTest
+        @MethodSource("checkoutClassProvider")
+        @DisplayName("T26: isValidISBN - Valid ISBN-10 and ISBN-13 formats are recognized correctly")
+        public void testIsValidISBN_ValidISBNFormatsRecognizedCorrectly(Class<? extends Checkout> checkoutClass) throws Exception {
+                checkout = createCheckout(checkoutClass);
+                assertTrue(checkout.isValidISBN("0123456789"), "isValidISBN should recognize valid ISBN-10 format");
+                assertTrue(checkout.isValidISBN("978-0-1234-5678-9"), "isValidISBN should recognize valid ISBN-13 format");
+        }
+
+        @ParameterizedTest
+        @MethodSource("checkoutClassProvider")
+        @DisplayName("T27: isValidISBN - Invalid ISBN formats are rejected correctly")
+        public void testIsValidISBN_InvalidISBNFormatsRejectedCorrectly(Class<? extends Checkout> checkoutClass) throws Exception {
+                checkout = createCheckout(checkoutClass);
+                assertFalse(checkout.isValidISBN(""), "isValidISBN should reject invalid blank format");
+                assertFalse(checkout.isValidISBN(null), "isValidISBN should reject invalid null format");
+                assertFalse(checkout.isValidISBN("letters"), "isValidISBN should reject invalid non-numeric format");
+        }
+
+        @ParameterizedTest
+        @MethodSource("checkoutClassProvider") 
+        @DisplayName("T28: isPatronType - Valid patron types are recognized correctly")
+        public void testIsPatronType_ValidPatronTypesRecognizedCorrectly(Class<? extends Checkout> checkoutClass) throws Exception {
+                checkout = createCheckout(checkoutClass);
+                Patron patronF = new Patron("P001", "Test Patron", "test@example.com",
+                        Patron.PatronType.FACULTY);
+                Patron patronS = new Patron("P002", "Test Patron2", "test2@example.com",
+                        Patron.PatronType.STUDENT);
+                Patron patronStaff = new Patron("P003", "Test Patron3", "test3@example.com",
+                        Patron.PatronType.STAFF);
+                Patron patronPublic = new Patron("P004", "Test Patron4", "test4@example.com",
+                        Patron.PatronType.PUBLIC);
+                Patron patronChild = new Patron("P005", "Test Patron5", "test5@example.com",
+                        Patron.PatronType.CHILD);
+                assertTrue(checkout.isPatronType("STUDENT", patronS.getType()), "isPatronType should recognize valid STUDENT patron type");
+                assertTrue(checkout.isPatronType("FACULTY", patronF.getType()), "isPatronType should recognize valid FACULTY patron type");
+                assertTrue(checkout.isPatronType("STAFF", patronStaff.getType()), "isPatronType should recognize valid STAFF patron type");
+                assertTrue(checkout.isPatronType("PUBLIC", patronPublic.getType()), "isPatronType should recognize valid PUBLIC patron type");
+                assertTrue(checkout.isPatronType("CHILD", patronChild.getType()), "isPatronType should recognize valid CHILD patron type");
+        }
+
+        @ParameterizedTest
+        @MethodSource("checkoutClassProvider")
+        @DisplayName("T29: returnBook - Null Patron returns error code -1.0")
+        public void testReturnBook_NullPatronReturnsErrorCode(Class<? extends Checkout> checkoutClass) throws Exception {
+                checkout = createCheckout(checkoutClass);
+                Book book1 = new Book("978-0-123456-78-9", "Test Book1",
+                        "Test Author", Book.BookType.FICTION, 5);
+                checkout.addBook(book1);
+                Patron patron = null;
+                double result = checkout.returnBook(book1.getIsbn(), patron);
+                assertEquals(-1.0, result, 0.01,
+                        "Expected error code -1.0 when returning a book with a null patron for " + checkoutClass.getSimpleName());
+        }
+        
+        @ParameterizedTest
+        @MethodSource("checkoutClassProvider")
+        @DisplayName("T30: returnBook - Caculate fine for overdue book returns correctly")
+        public void testReturnBook_CalculateFineForOverdueBookReturnsCorrectly(Class<? extends Checkout> checkoutClass) throws Exception {
+                checkout = createCheckout(checkoutClass);
+                Book book1 = new Book("978-0-123456-78-9", "Test Book1",
+                        "Test Author", Book.BookType.FICTION, 5);
+                checkout.addBook(book1);
+                Patron patron = new Patron("P001", "Test Patron", "test@example.com",
+                        Patron.PatronType.FACULTY);
+                checkout.registerPatron(patron);
+                checkout.checkoutBook(book1, patron);
+                patron.addCheckedOutBook(book1.getIsbn(), LocalDate.now().minusDays(365)); // Simulate overdue by setting checkout date in the past
+                double result = checkout.returnBook(book1.getIsbn(), patron);
+                assertEquals(checkout.MAX_FINE_AMOUNT, result, 0.01,
+                        "Expected fine of $25.0 for returning an overdue book for " + checkoutClass.getSimpleName());
+        }
 
 }
