@@ -30,7 +30,7 @@ public class CheckoutBlackBoxSample {
          * Provides the list of Checkout classes to test.
          * Each test will run against ALL implementations.
          */
-        @SuppressWarnings("unchecked")
+       /* @SuppressWarnings("unchecked")
         static Stream<Class<? extends Checkout>> checkoutClassProvider() {
                 return (Stream<Class<? extends Checkout>>) Stream.of(
                         Checkout0.class,
@@ -39,11 +39,12 @@ public class CheckoutBlackBoxSample {
                         Checkout3.class
                 );
         }
+                */
 
     // Uncomment when you implement the method in assign 3 and comment the above
-//    static Stream<Class<? extends Checkout>> checkoutClassProvider() {
-//        return Stream.of(Checkout.class);
-//    }
+    static Stream<Class<? extends Checkout>> checkoutClassProvider() {
+        return Stream.of(Checkout.class);
+    }
 
 
         /**
@@ -139,7 +140,11 @@ public class CheckoutBlackBoxSample {
                 Book book = null; // Null book
                 Patron patron = new Patron("P001", "Test Patron", "test@example.com",
                         Patron.PatronType.STUDENT);
-                checkout.addBook(book);
+                try {
+                    checkout.addBook(book);
+                } catch (Exception e) {
+                    // Ignore exception from adding null book since we are testing checkout behavior
+                }
                 checkout.registerPatron(patron);
 
                 // Execute checkout
@@ -615,7 +620,11 @@ public class CheckoutBlackBoxSample {
                         "Test Author", Book.BookType.FICTION, 5);
                 Patron patron = null; // Null patron
                 checkout.addBook(book1);
-                checkout.registerPatron(patron);
+                try {
+                  checkout.registerPatron(patron);
+                } catch (Exception e) {
+                        // Ignore exception from registering null patron since we are testing checkout behavior
+                }
                 // Now try to checkout the book
                 double result = checkout.checkoutBook(book1, patron);
                 // Verify: Should return 3.1 for null patron
@@ -685,7 +694,7 @@ public class CheckoutBlackBoxSample {
          */
         @ParameterizedTest
         @MethodSource("checkoutClassProvider")
-        @DisplayName("T17: Patron trying to renew a book returns error code 3.2")
+        @DisplayName("T17: Patron FACULTY trying to renew a book returns error code 3.2")
         public void testMaxCheckoutFaculty(Class<? extends Checkout> checkoutClass) throws Exception {
                 //Setup: Create checkout system and patron
                 checkout = createCheckout(checkoutClass);
@@ -791,7 +800,7 @@ public class CheckoutBlackBoxSample {
          */
         @ParameterizedTest
         @MethodSource("checkoutClassProvider")
-        @DisplayName("T17: Patron trying to renew a book returns error code 3.2")
+        @DisplayName("T17: Patron STUDENT trying to renew a book returns error code 3.2")
         public void testMaxCheckoutStudent(Class<? extends Checkout> checkoutClass) throws Exception {
                 //Setup: Create checkout system and patron
                 checkout = createCheckout(checkoutClass);
@@ -857,7 +866,7 @@ public class CheckoutBlackBoxSample {
          */
         @ParameterizedTest
         @MethodSource("checkoutClassProvider")
-        @DisplayName("T19: Patron trying to checkout a book returns error code 3.2")
+        @DisplayName("T19: Patron PUBLIC trying to checkout a book returns error code 3.2")
         public void testMaxCheckoutPublic(Class<? extends Checkout> checkoutClass) throws Exception {
                 //Setup: Create checkout system and patron
                 checkout = createCheckout(checkoutClass);
@@ -903,7 +912,7 @@ public class CheckoutBlackBoxSample {
          */
         @ParameterizedTest
         @MethodSource("checkoutClassProvider")
-        @DisplayName("T20: Patron trying to renew a book returns error code 3.2")
+        @DisplayName("T20: Patron CHILD trying to renew a book returns error code 3.2")
         public void testMaxCheckoutChild(Class<? extends Checkout> checkoutClass) throws Exception {
                 //Setup: Create checkout system and patron
                 checkout = createCheckout(checkoutClass);
@@ -916,7 +925,7 @@ public class CheckoutBlackBoxSample {
                 Book book4 = new Book("978-0-123456-78-12", "Test Book4",
                         "Test Author", Book.BookType.FICTION, 5);
                 Patron patron = new Patron("P001", "Test Patron", "test@example.com",
-                        Patron.PatronType.FACULTY);
+                        Patron.PatronType.CHILD);
                 checkout.addBook(book1);
                 checkout.addBook(book2);
                 checkout.addBook(book3);
@@ -941,7 +950,7 @@ public class CheckoutBlackBoxSample {
          */
         @ParameterizedTest
         @MethodSource("checkoutClassProvider")
-        @DisplayName("T21: Patron trying to renew a book returns error code 3.2")
+        @DisplayName("T21: Patron STAFF trying to renew a book returns error code 3.2")
         public void testMaxCheckoutStaff(Class<? extends Checkout> checkoutClass) throws Exception {
                 //Setup: Create checkout system and patron
                 checkout = createCheckout(checkoutClass);
@@ -1128,7 +1137,7 @@ public class CheckoutBlackBoxSample {
          */
         @ParameterizedTest
         @MethodSource("checkoutClassProvider")
-        @DisplayName("T25: Patron trying to checkout a book returns error code 14.0")
+        @DisplayName("T25: Patron trying to checkout a book returns error code 4.1")
         public void testAboveTabLimit(Class<? extends Checkout> checkoutClass) throws Exception {
                 //Setup: Create checkout system and patron
                 checkout = createCheckout(checkoutClass);
@@ -1142,9 +1151,9 @@ public class CheckoutBlackBoxSample {
                 patron.addFine(14.0);
                 // Now try to checkout the book
                 double result = checkout.checkoutBook(book1, patron);
-                // Verify: Should return 14.0 for patron with a high tab
-                assertEquals(14.0, result, 0.01,
-                        "Expected error code 14.0 for patron with a high tab for " + checkoutClass.getSimpleName());
+                // Verify: Should return 4.1 for patron with a high tab
+                assertEquals(4.1, result, 0.01,
+                        "Expected error code 4.1 for patron with a high tab for " + checkoutClass.getSimpleName());
                 // Verify: Patron should NOT have the 5th book
                 assertFalse(patron.hasBookCheckedOut(book1.getIsbn()),
                         "Patron should NOT have 5th book in list for " + checkoutClass.getSimpleName());

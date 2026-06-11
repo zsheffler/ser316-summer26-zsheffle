@@ -140,7 +140,49 @@ public class Checkout {
      * @return Status code indicating result (see above)
      */
     public double checkoutBook(Book book, Patron patron) {
-//        Implement me in Assignment 3
+        // Step 1: Validate patron eligibility
+        double eligibilityCode = validatePatronEligibility(patron);
+        if (eligibilityCode != 0.0) {
+            return eligibilityCode; // Return appropriate error code from validation
+        }
+        // Step 2: Check if book is null
+        if (book == null) {
+            return 2.1;
+        }
+        // Step 3: Check if book is reference-only
+        if (book.isReferenceOnly()) {
+            return 5.0;
+        }
+        // Step 4: Check if this is a renewal (patron already has this book checked out)
+        if (patron.hasBookCheckedOut(book.getIsbn())) {
+            // Process renewal: update due date but do not change availability
+            LocalDate newDueDate = LocalDate.now().plusDays(patron.getLoanPeriodDays());
+            patron.getCheckedOutBooks().put(book.getIsbn(), newDueDate);
+            return 0.1; // Renewal success code
+        }
+        // Step 5.1: Check if book is available
+        if (!book.isAvailable()) {
+            return 2.0;
+        }
+        // Step 5.2: Check if patron is at max checkout limit
+        int currentCheckoutCount = patron.getCheckedOutBooks().size();
+        int maxCheckoutLimit = patron.getMaxCheckoutLimit();
+        if (currentCheckoutCount >= maxCheckoutLimit) {
+            return 3.2;
+        }
+        // Step 5.3: Process checkout
+        LocalDate dueDate = LocalDate.now().plusDays(patron.getLoanPeriodDays());
+        patron.addCheckedOutBook(book.getIsbn(), dueDate);
+        book.checkout();
+        history.add(new Transaction(patron, book, LocalDate.now(), dueDate));
+        // Determine success code based on patron's overdue count and proximity to max checkout limit
+        if (patron.getOverdueCount() >= 1) {
+            return 1.0; // Success with warning: has 1 or more overdue books
+        }
+        if (currentCheckoutCount + 1 >= maxCheckoutLimit - 1) {
+            return 1.1; // Success with warning: within 2 of max checkout limit after this checkout
+        }
+        
         // Normal success
         return 0.0;
     }
