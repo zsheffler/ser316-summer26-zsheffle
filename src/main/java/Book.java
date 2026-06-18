@@ -46,7 +46,11 @@ public class Book {
             this.available = false;
         } else {
             this.availableCopies = totalCopies;
-            this.available = true;
+            if (availableCopies > 0) {
+                this.available = true;
+            } else {
+                this.available = false;
+            }
         }
     }
 
@@ -103,7 +107,7 @@ public class Book {
      * Increments available copies when book is returned.
      */
     public void returnBook() {
-        if (availableCopies < 100) {
+        if (availableCopies < totalCopies) {
             availableCopies++;
         }
         this.available = (availableCopies > 0);
