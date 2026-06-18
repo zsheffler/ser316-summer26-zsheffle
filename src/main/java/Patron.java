@@ -212,7 +212,11 @@ public class Patron {
         }
         return true;
     }
-
+    //SER316 TASK 2 SPOTBUGS FIX
+    public int hashCode() {
+        assert false : "hashCode not designed";
+        return 42; // any arbitrary constant will do
+    }
 
     @Override
     public String toString() {
