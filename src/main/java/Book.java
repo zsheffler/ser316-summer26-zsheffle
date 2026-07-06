@@ -6,6 +6,8 @@ import java.util.List;
  * Books have ISBN numbers, metadata, and availability status.
  */
 public class Book {
+    public static final int HASH_MAGIC_NUMBER = 31;
+
     private String isbn;
     private String title;
     private String author;
@@ -138,8 +140,7 @@ public class Book {
 
     @Override
     public int hashCode() {
-        // Magic number 31
-        return 31 * (isbn == null ? 0 : isbn.hashCode());
+        return HASH_MAGIC_NUMBER * (isbn == null ? 0 : isbn.hashCode());
     }
 
     @Override

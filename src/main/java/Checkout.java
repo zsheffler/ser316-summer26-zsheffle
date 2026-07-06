@@ -20,7 +20,7 @@ public class Checkout {
     public static final double ERROR_PARTRON_SUSPENDED = 3.0;
     public static final double ERROR_PARTRON_NULL = 3.1;
     public static final double ERROR_PARTRON_AT_MAX_BOOKS = 3.2;
-    public static final double ERROR_PARTRON_3_PLUS_OVERDUE = 4.0;
+    public static final double ERROR_PARTRON_PLUS_OVERDUE = 4.0;
     public static final double ERROR_PARTRON_FINES_OVERLIMIT = 4.1;
     public static final double ERROR_BOOK_REFERENCE_ONLY = 5.0;
     public static final int FINE_DAY_LIMIT_1 = 7;
@@ -30,6 +30,9 @@ public class Checkout {
     public static final double FINE_CHARGE_DAY_MULTIPLIER_3 = 1.00;
     public static final int ISBN_13 = 13;// digits (e.g., "978-0-123456-78-9")
     public static final int ISBN_10 = 10;// digits (e.g., "0123456789")
+    public static final int OVERDUE_PLUS_FINE_LIMIT = 3; // 3 or more overdue books triggers error code 4.0
+    public static final double FINE_THRESHOLD = 10.0; // $10.00 or more in fines triggers error code 4.1
+
     private Map<String, Book> bookList; // ISBN -> Book
     private Map<String, Patron> patrons; // PatronID -> Patron
     private List<Transaction> history; //
@@ -92,10 +95,10 @@ public class Checkout {
         if (patron.isAccountSuspended()) {
             return ERROR_PARTRON_SUSPENDED;
         }
-        if (patron.getOverdueCount() >= 3) {
-            return ERROR_PARTRON_3_PLUS_OVERDUE;
+        if (patron.getOverdueCount() >= OVERDUE_PLUS_FINE_LIMIT) {
+            return ERROR_PARTRON_PLUS_OVERDUE;
         }
-        if (patron.getFineBalance() >= 10.0) {
+        if (patron.getFineBalance() >= FINE_THRESHOLD) {
             return ERROR_PARTRON_FINES_OVERLIMIT;
         }
         return SUCCESS_NORMAL_CODE; // Eligible

@@ -7,6 +7,21 @@ import java.util.Map;
  * Tracks checked out books, fines, and account status.
  */
 public class Patron {
+    public static final int HASH_MAGIC_NUMBER = 42;
+    public static final int FACULTY_MAX_CHECKOUT = 20;
+    public static final int STAFF_MAX_CHECKOUT = 15;
+    public static final int STUDENT_MAX_CHECKOUT = 10;
+    public static final int PUBLIC_MAX_CHECKOUT = 5;
+    public static final int CHILD_MAX_CHECKOUT = 3;
+    public static final int DEFAULT_MAX_CHECKOUT = 5;
+    public static final int FACULTY_LOAN_PERIOD_DAYS = 60;
+    public static final int STAFF_LOAN_PERIOD_DAYS = 45;
+    public static final int STUDENT_LOAN_PERIOD_DAYS = 30;
+    public static final int CHILD_LOAN_PERIOD_DAYS = 14;
+    public static final int DEFAULT_LOAN_PERIOD_DAYS = 21;
+
+
+
     private String patronId;
     private String name;
     private String email;
@@ -95,17 +110,17 @@ public class Patron {
     public int getMaxCheckoutLimit() {
         switch (type) {
             case FACULTY:
-                return 20;
+                return FACULTY_MAX_CHECKOUT;
             case STAFF:
-                return 15;
+                return STAFF_MAX_CHECKOUT;
             case STUDENT:
-                return 10;
+                return STUDENT_MAX_CHECKOUT;
             case PUBLIC:
-                return 5;
+                return PUBLIC_MAX_CHECKOUT;
             case CHILD:
-                return 3;
+                return CHILD_MAX_CHECKOUT;
             default:
-                return 5;
+                return DEFAULT_MAX_CHECKOUT;
         }
     }
 
@@ -117,17 +132,17 @@ public class Patron {
     public int getLoanPeriodDays() {
         switch (type) {
             case FACULTY:
-                return 60;
+                return FACULTY_LOAN_PERIOD_DAYS;
             case STAFF:
-                return 45;
+                return STAFF_LOAN_PERIOD_DAYS;
             case STUDENT:
-                return 30;
+                return STUDENT_LOAN_PERIOD_DAYS;
             case PUBLIC:
-                return 21;
+                return DEFAULT_LOAN_PERIOD_DAYS;
             case CHILD:
-                return 14;
+                return CHILD_LOAN_PERIOD_DAYS;
             default:
-                return 21;
+                return DEFAULT_LOAN_PERIOD_DAYS;
         }
     }
 
@@ -223,7 +238,7 @@ public class Patron {
     //SER316 TASK 2 SPOTBUGS FIX
     public int hashCode() {
         assert false : "hashCode not designed";
-        return 42; // any arbitrary constant will do
+        return HASH_MAGIC_NUMBER;
     }
 
     @Override
