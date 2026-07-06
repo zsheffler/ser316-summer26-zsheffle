@@ -8,19 +8,6 @@ import java.util.Map;
  */
 public class Patron {
     public static final int HASH_MAGIC_NUMBER = 42;
-    public static final int FACULTY_MAX_CHECKOUT = 20;
-    public static final int STAFF_MAX_CHECKOUT = 15;
-    public static final int STUDENT_MAX_CHECKOUT = 10;
-    public static final int PUBLIC_MAX_CHECKOUT = 5;
-    public static final int CHILD_MAX_CHECKOUT = 3;
-    public static final int DEFAULT_MAX_CHECKOUT = 5;
-    public static final int FACULTY_LOAN_PERIOD_DAYS = 60;
-    public static final int STAFF_LOAN_PERIOD_DAYS = 45;
-    public static final int STUDENT_LOAN_PERIOD_DAYS = 30;
-    public static final int CHILD_LOAN_PERIOD_DAYS = 14;
-    public static final int DEFAULT_LOAN_PERIOD_DAYS = 21;
-
-
 
     private String patronId;
     private String name;
@@ -33,13 +20,21 @@ public class Patron {
     private LocalDate memberDate;
 
     public enum PatronType {
-        STUDENT,
-        FACULTY,
-        STAFF,
-        PUBLIC,
-        CHILD
+        FACULTY(20, 60), 
+        STAFF(15, 45), 
+        STUDENT(10, 30), 
+        PUBLIC(5, 21), 
+        CHILD(3, 14);
+        
+        private final int maxBooks;
+        private final int loanPeriodDays;
+        PatronType(int maxBooks, int loanPeriodDays) { 
+            this.maxBooks = maxBooks; 
+            this.loanPeriodDays = loanPeriodDays;
+        }
+        public int getMaxBooks() { return maxBooks; }
+        public int getLoanPeriodDays() { return loanPeriodDays; }
     }
-
     /**
      * Creates a new Patron.
      *
@@ -108,20 +103,7 @@ public class Patron {
      * @return Maximum checkout limit
      */
     public int getMaxCheckoutLimit() {
-        switch (type) {
-            case FACULTY:
-                return FACULTY_MAX_CHECKOUT;
-            case STAFF:
-                return STAFF_MAX_CHECKOUT;
-            case STUDENT:
-                return STUDENT_MAX_CHECKOUT;
-            case PUBLIC:
-                return PUBLIC_MAX_CHECKOUT;
-            case CHILD:
-                return CHILD_MAX_CHECKOUT;
-            default:
-                return DEFAULT_MAX_CHECKOUT;
-        }
+        return this.type.getMaxBooks();
     }
 
     /**
@@ -130,20 +112,7 @@ public class Patron {
      * @return Loan period in days
      */
     public int getLoanPeriodDays() {
-        switch (type) {
-            case FACULTY:
-                return FACULTY_LOAN_PERIOD_DAYS;
-            case STAFF:
-                return STAFF_LOAN_PERIOD_DAYS;
-            case STUDENT:
-                return STUDENT_LOAN_PERIOD_DAYS;
-            case PUBLIC:
-                return DEFAULT_LOAN_PERIOD_DAYS;
-            case CHILD:
-                return CHILD_LOAN_PERIOD_DAYS;
-            default:
-                return DEFAULT_LOAN_PERIOD_DAYS;
-        }
+        return this.type.getLoanPeriodDays();
     }
 
     public void resetFines() {
