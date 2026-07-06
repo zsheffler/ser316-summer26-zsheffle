@@ -89,6 +89,7 @@ if (project.hasProperty('staticAnalysis')) {
         toolVersion = '6.52.0'
         ruleSets = []
         ignoreFailures = true
+        ruleSetFiles = files("config/pmd/pmd.xml")
     }
 }
 
