@@ -10,26 +10,26 @@ import java.util.Map;
  * Handles book checkouts, returns, renewals, and fine calculations.
  */
 public class Checkout {
-    private static final double MAX_FINE_AMOUNT = 25.0;
-    private static final double SUCCESS_NORMAL_CODE = 0.0;
-    private static final double SUCCESS_RENEWAL_CODE = 0.1;
-    private static final double SUCCESS_WITH_WARNING_OF_OVERDUE = 1.0;
-    private static final double SUCCESS_WITH_WARNING_OF_MAX = 1.1;
-    private static final double ERROR_BOOK_UNAVAILABLE = 2.0;
-    private static final double ERROR_BOOK_NULL = 2.1;
-    private static final double ERROR_PARTRON_SUSPENDED = 3.0;
-    private static final double ERROR_PARTRON_NULL = 3.1;
-    private static final double ERROR_PARTRON_AT_MAX_BOOKS = 3.2;
-    private static final double ERROR_PARTRON_3_PLUS_OVERDUE = 4.0;
-    private static final double ERROR_PARTRON_FINES_OVERLIMIT = 4.1;
-    private static final double ERROR_BOOK_REFERENCE_ONLY = 5.0;
-    private static final int FINE_DAY_LIMIT_1 = 7;
-    private static final int FINE_DAY_LIMIT_2 = 14;
-    private static final double FINE_CHARGE_DAY_MULTIPLIER_1 = 0.25;
-    private static final double FINE_CHARGE_DAY_MULTIPLIER_2 = 0.50;
-    private static final double FINE_CHARGE_DAY_MULTIPLIER_3 = 1.00;
-    private static final int ISBN_13 = 13;// digits (e.g., "978-0-123456-78-9")
-    private static final int ISBN_10 = 10;// digits (e.g., "0123456789")
+    public static final double MAX_FINE_AMOUNT = 25.0;
+    public static final double SUCCESS_NORMAL_CODE = 0.0;
+    public static final double SUCCESS_RENEWAL_CODE = 0.1;
+    public static final double SUCCESS_WITH_WARNING_OF_OVERDUE = 1.0;
+    public static final double SUCCESS_WITH_WARNING_OF_MAX = 1.1;
+    public static final double ERROR_BOOK_UNAVAILABLE = 2.0;
+    public static final double ERROR_BOOK_NULL = 2.1;
+    public static final double ERROR_PARTRON_SUSPENDED = 3.0;
+    public static final double ERROR_PARTRON_NULL = 3.1;
+    public static final double ERROR_PARTRON_AT_MAX_BOOKS = 3.2;
+    public static final double ERROR_PARTRON_3_PLUS_OVERDUE = 4.0;
+    public static final double ERROR_PARTRON_FINES_OVERLIMIT = 4.1;
+    public static final double ERROR_BOOK_REFERENCE_ONLY = 5.0;
+    public static final int FINE_DAY_LIMIT_1 = 7;
+    public static final int FINE_DAY_LIMIT_2 = 14;
+    public static final double FINE_CHARGE_DAY_MULTIPLIER_1 = 0.25;
+    public static final double FINE_CHARGE_DAY_MULTIPLIER_2 = 0.50;
+    public static final double FINE_CHARGE_DAY_MULTIPLIER_3 = 1.00;
+    public static final int ISBN_13 = 13;// digits (e.g., "978-0-123456-78-9")
+    public static final int ISBN_10 = 10;// digits (e.g., "0123456789")
     private Map<String, Book> bookList; // ISBN -> Book
     private Map<String, Patron> patrons; // PatronID -> Patron
     private List<Transaction> history; //
