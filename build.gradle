@@ -84,7 +84,7 @@ if (project.hasProperty('staticAnalysis')) {
         }
     }
 
-     add PMD config if desired maybe used in assign 6
+    // add PMD config if desired maybe used in assign 6
     pmd {
         toolVersion = '6.52.0'
         ruleSets = []
