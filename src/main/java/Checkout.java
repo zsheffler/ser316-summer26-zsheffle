@@ -10,19 +10,34 @@ import java.util.Map;
  * Handles book checkouts, returns, renewals, and fine calculations.
  */
 public class Checkout {
-    public static final double MAX_FINE_AMOUNT = 25.0;
-    public static final double SUCCESS_NORMAL_CODE = 0.0;
-    public static final double SUCCESS_RENEWAL_CODE = 0.1;
-    public static final double SUCCESS_WITH_WARNING_OF_OVERDUE = 1.0;
-    public static final double SUCCESS_WITH_WARNING_OF_MAX = 1.1;
-    public static final double ERROR_BOOK_UNAVAILABLE = 2.0;
-    public static final double ERROR_BOOK_NULL = 2.1;
-    public static final double ERROR_PARTRON_SUSPENDED = 3.0;
-    public static final double ERROR_PARTRON_NULL = 3.1;
-    public static final double ERROR_PARTRON_AT_MAX_BOOKS = 3.2;
-    public static final double ERROR_PARTRON_PLUS_OVERDUE = 4.0;
-    public static final double ERROR_PARTRON_FINES_OVERLIMIT = 4.1;
-    public static final double ERROR_BOOK_REFERENCE_ONLY = 5.0;
+    public enum CheckoutStatus {
+        SUCCESS_NORMAL(0.0),
+        SUCCESS_RENEWAL(0.1),
+        SUCCESS_WITH_WARNING_OF_OVERDUE(1.0),
+        SUCCESS_WITH_WARNING_OF_MAX(1.1),
+        ERROR_BOOK_UNAVAILABLE(2.0),
+        ERROR_BOOK_NULL(2.1),
+        ERROR_PARTRON_SUSPENDED(3.0),
+        ERROR_PARTRON_NULL(3.1),
+        ERROR_PARTRON_AT_MAX_BOOKS(3.2),
+        ERROR_PARTRON_PLUS_OVERDUE(4.0),
+        ERROR_PARTRON_FINES_OVERLIMIT(4.1),
+        ERROR_BOOK_REFERENCE_ONLY(5.0);
+
+        // Internal field to hold the double code
+        private final double code;
+
+        // Constructor (must be private or package-private)
+        CheckoutStatus(double code) {
+            this.code = code;
+        }
+
+        // Getter to retrieve the numeric code when needed
+        public double getCode() {
+            return this.code;
+        }
+    }
+    public static final double MAX_FINE_AMOUNT = 25.0; // Maximum fine per book
     public static final int FINE_DAY_LIMIT_1 = 7;
     public static final int FINE_DAY_LIMIT_2 = 14;
     public static final double FINE_CHARGE_DAY_MULTIPLIER_1 = 0.25;
@@ -90,18 +105,18 @@ public class Checkout {
 
     public double validatePatronEligibility(Patron patron) {
         if (patron == null) {
-            return ERROR_PARTRON_NULL;
+            return CheckoutStatus.ERROR_PARTRON_NULL.getCode();
         }
         if (patron.isAccountSuspended()) {
-            return ERROR_PARTRON_SUSPENDED;
+            return CheckoutStatus.ERROR_PARTRON_SUSPENDED.getCode();
         }
         if (patron.getOverdueCount() >= OVERDUE_PLUS_FINE_LIMIT) {
-            return ERROR_PARTRON_PLUS_OVERDUE;
+            return CheckoutStatus.ERROR_PARTRON_PLUS_OVERDUE.getCode();
         }
         if (patron.getFineBalance() >= FINE_THRESHOLD) {
-            return ERROR_PARTRON_FINES_OVERLIMIT;
+            return CheckoutStatus.ERROR_PARTRON_FINES_OVERLIMIT.getCode();
         }
-        return SUCCESS_NORMAL_CODE; // Eligible
+        return CheckoutStatus.SUCCESS_NORMAL.getCode(); // Eligible
     }
 
     /**
@@ -179,28 +194,28 @@ public class Checkout {
         }
         // Step 2: Check if book is null
         if (book == null) {
-            return ERROR_BOOK_NULL;
+            return CheckoutStatus.ERROR_BOOK_NULL.getCode();
         }
         // Step 3: Check if book is reference-only
         if (book.isReferenceOnly()) {
-            return ERROR_BOOK_REFERENCE_ONLY;
+            return CheckoutStatus.ERROR_BOOK_REFERENCE_ONLY.getCode();
         }
         // Step 4: Check if this is a renewal (patron already has this book checked out)
         if (patron.hasBookCheckedOut(book.getIsbn())) {
             // Process renewal: update due date but do not change availability
             LocalDate newDueDate = LocalDate.now().plusDays(patron.getLoanPeriodDays());
             patron.getCheckedOutBooks().put(book.getIsbn(), newDueDate);
-            return SUCCESS_RENEWAL_CODE; // Renewal success code
+            return CheckoutStatus.SUCCESS_RENEWAL.getCode(); // Renewal success code
         } 
         // Step 5.1: Check if book is available
         if (!book.isAvailable()) {
-            return ERROR_BOOK_UNAVAILABLE;
+            return CheckoutStatus.ERROR_BOOK_UNAVAILABLE.getCode();
         }
         // Step 5.2: Check if patron is at max checkout limit
         int currentCheckoutCount = patron.getCheckedOutBooks().size();
         int maxCheckoutLimit = patron.getMaxCheckoutLimit();
         if (currentCheckoutCount >= maxCheckoutLimit) {
-            return ERROR_PARTRON_AT_MAX_BOOKS;
+            return CheckoutStatus.ERROR_PARTRON_AT_MAX_BOOKS.getCode();
         }
         // Step 5.3: Process checkout
         LocalDate dueDate = LocalDate.now().plusDays(patron.getLoanPeriodDays());
@@ -209,14 +224,14 @@ public class Checkout {
         history.add(new Transaction(patron, book, LocalDate.now(), dueDate));
         // Determine success code based on patron's overdue count and proximity to max checkout limit
         if (patron.getOverdueCount() >= 1) {
-            return SUCCESS_WITH_WARNING_OF_OVERDUE; // Success with warning: has 1 or more overdue books
+            return CheckoutStatus.SUCCESS_WITH_WARNING_OF_OVERDUE.getCode(); // Success with warning: has 1 or more overdue books
         }
         if (currentCheckoutCount + 1 >= maxCheckoutLimit - 1) {
-            return SUCCESS_WITH_WARNING_OF_MAX; //Success with warning: within 2 of max checkout limit after this checkout
+            return CheckoutStatus.SUCCESS_WITH_WARNING_OF_MAX.getCode(); //Success with warning: within 2 of max checkout limit after this checkout
         }
         
         // Normal success
-        return SUCCESS_NORMAL_CODE;
+        return CheckoutStatus.SUCCESS_NORMAL.getCode();
     }
 
 
